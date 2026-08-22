@@ -87,7 +87,7 @@ const cartTotal = document.getElementById("cart-total");
 const cartCount = document.getElementById("cart-count");
 const toggleCart = document.getElementById("toggle-cart");
 const cartContent = document.getElementById("cart-content");
-const cartWindow = document.getElementById(".cart-window");
+const cartWindow = document.getElementById("cart-window");
 
 /* =========================================
      LOAD PAGE CONTENT
