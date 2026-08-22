@@ -53,6 +53,27 @@ const products = [
         price: 4.25,
         image: "images/cinnamon-roll.png",
         alt: "Warm cinnamon roll"
+    },
+    {
+        name: "Blueberry Muffin",
+        description: "Fresh baked muffin filled with blueberries.",
+        price: 3.50,
+        image: "images/blueberry-muffin.png",
+        alt: "Fresh blueberry muffin"
+    },
+    {
+        name: "Chocolate Donut",
+        description: "Soft donut topped with chocolate icing.",
+        price: 3.25,
+        image: "images/chocolate-donut.png",
+        alt: "Chocolate iced donut"
+    },
+    {
+        name: "Strawberry Danish"
+        description: "Flaky pastry filled with sweet strawberry filling.",
+        price: 4.75,
+        image: "images/strawberry-danish.png",
+        alt: "Fresh strawberry donut"
     }
 ];
 
@@ -60,38 +81,155 @@ const products = [
 let cart = [];
 
 // STEP 5
-
+const productGrid = document.querySelector(".product-grid");
+const cartItems = document.getElementById("cart-items");
+const cartTotal = document.getElementById("cart-total");
+const cartCount = document.getElementById("cart-count");
+const toggleCart = document.getElementById("toggle-cart");
+const cartContent = document.getElementById("cart-content");
+const cartWindow = document.getElementById(".cart-window");
 
 /* =========================================
      LOAD PAGE CONTENT
 ========================================= */
 
 // STEP 6
+window.addEventListener("DOMContentLoaded", () => {
 
+    //Display products to HTML page
+    displayProducts();
+
+    //Load stored cookie data
+    loadCartFromCookies();
+
+    //Update cart
+    updateCartDisplay();
+});
 /* =========================================
      DYNAMICALLY CREATE PRODUCT CARDS
 ========================================= */
 
 // STEP 7
+function displayProducts() {
+    //Loop through product array
+    products.forEach(product => {
 
+        //Create a new product card
+        const article = document.createElement("article");
+        article.classList.add("card");
+
+        article.innerHTML = `
+            <img src="${product.image}" alt="${product.alt}">
+            <h3>${product.name}</h3>
+            <p>${product.description}</p>
+            <span>$${product.price.toFixed(2)}</span>
+            <button class="add-cart">Add to Cart</button?
+        `;
+
+        //Grab Select Button
+        const button = article.querySelector(".add-cart");
+
+        //Add a click event listener to button
+        button.addEventListener("click", () => {
+            addToCart(product);
+        });
+
+        //Add product card to the page
+        productGrid.appendChild(article);
+    });
+}
 /* =========================================
      ADD PRODUCT TO CART
 ========================================= */
 
 // STEP 8
+function addToCart(product) {
+    //Check if product already exists in cart
+    const existingItem = cart.find(item => item.name === product.name);
 
+    if (existingItem) {
+        existingItem.quantity++;
+    } else {
+        cart.push({
+            name: product.name,
+            price: product.price,
+            quantity: 1
+        });
+    }
+
+    //Update cart
+    updateCartDisplay();
+
+    //Update cookie to save current cart status
+    saveCartToCookies();
+
+    //Animate the cart block to visually notify user of changes
+    bounceCart();
+}
 /* =========================================
      UPDATE CART DISPLAY
 ========================================= */
 
 // STEP 9
+function updateCartDisplay() {
 
+    //Clear out existing cart
+    cartItems.innerHTML = "";
+
+    let total = 0;
+    let count = 0;
+
+    //Loop through the cart
+    cart.forEach((item, index) => {
+
+        //Create a list item
+        const li = document.createElement("li");
+
+        //Calculate the item total
+        const itemTotal = item.price * item.quantity;
+
+        total += itemTotal;
+        count += item.quantity;
+
+        //Prep item display in cart
+        li.innerHTML = `
+        <span>
+            ${item.name} x${item.quantity}
+            ($${itemTotal.toFixed(2)})
+        </span>
+
+        <button class="remove-btn" aria-label="Remove ${item.name}">Remove</button>
+        `;
+
+        //Configure Remove button
+        const removeButton = li.querySelector(".remove-btn");
+
+        removeButton.addEventListener("click", () => {
+            removeItem(index);
+        });
+
+        //Add item to cart
+        cartItems.appendChild(li);
+    });
+
+    //Update totals
+    cartTotal.textContent = `Total: $${total.toFixed(2)}`;
+    cartCount.textContent = count;
+}
 /* =========================================
      REMOVE ITEMS FROM CART
 ========================================= */
 
 // STEP 10
+function removeItem(index) {
 
+    //Remove item at index from the cart
+    cart.splice(index, 1);
+
+    //Update cart display and cookie data
+    updateCartDisplay();
+    saveCartToCookies();
+}
 /* =========================================
      SAVE CART USING COOKIES
 ========================================= */
@@ -101,13 +239,40 @@ let cart = [];
 /* =========================================
      LOAD CART FROM COOKIE
 ========================================= */
+function saveCartToCookies() {
 
+    //Convert Array to string
+    const cartStrong = JSON.stringify(cart);
+
+    //Store string in cookie
+    document.cookie = `bakeryCart=${cartString}; path=/; max-age=604800`;
+}
 // STEP 12
 
 /* =========================================
      COLLAPSIBLE CART WINDOW
 ========================================= */
+function loadCartFromCookies() {
 
+    //Split data in cookie for easier processing 
+    const cookies = document.cookie.split(";");
+
+    cookies.forEach(cookie => {
+
+        //Remove trailing spaces
+        const trimmedCookie = cookie.trim();
+
+        //Find target cookie data
+        if (trimmedCookie.startsWith("bakeryCart=")) {
+
+            //Get value from cookie
+            const cookieValue = trimmedCookie.substring("bakeryCart=".length);
+
+            //Parse the JSON data
+            cart = JSON.parse(cookieValue);
+        }
+    });
+}
 let cartOpen = true;
 
 /* =========================================
@@ -131,3 +296,12 @@ toggleCart.addEventListener("click", () => {
 ========================================= */
 
 // STEP 13
+function bounceCart() {
+
+    cartWindow.classList.add("bounce");
+
+    //End animation after 500ms (0.5 seconds)
+    setTimeout(() => {
+        cartWindow.classList.remove("bounce")
+    }, 500);
+}
