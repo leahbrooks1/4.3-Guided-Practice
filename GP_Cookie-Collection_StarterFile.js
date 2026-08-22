@@ -242,7 +242,7 @@ function removeItem(index) {
 function saveCartToCookies() {
 
     //Convert Array to string
-    const cartStrong = JSON.stringify(cart);
+    const cartString = JSON.stringify(cart);
 
     //Store string in cookie
     document.cookie = `bakeryCart=${cartString}; path=/; max-age=604800`;
