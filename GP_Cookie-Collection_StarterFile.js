@@ -69,7 +69,7 @@ const products = [
         alt: "Chocolate iced donut"
     },
     {
-        name: "Strawberry Danish"
+        name: "Strawberry Danish",
         description: "Flaky pastry filled with sweet strawberry filling.",
         price: 4.75,
         image: "images/strawberry-danish.png",
